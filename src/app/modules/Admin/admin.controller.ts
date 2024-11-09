@@ -1,14 +1,11 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { AdminServices } from "./admin.service";
-import pickQuerydata from "../../utils/pickQuerydata";
-import {
-  ADMIN_ALLOWED_QUERY_PARAMS,
-  ADMIN_FILTERABLE_FIELDS,
-} from "./admin.constant";
+import { ADMIN_ALLOWED_QUERY_PARAMS } from "./admin.constant";
 import getAllowedQueryParams from "../../utils/getAllowedQueryParams";
+import sendResponse from "../../utils/sendResponse";
 
 // ----------------- get all admins ----------------
-const getAllAdmin = async (req: Request, res: Response) => {
+const getAllAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // get only allowed query params object
     const allowedQueryParams = getAllowedQueryParams(
@@ -17,20 +14,92 @@ const getAllAdmin = async (req: Request, res: Response) => {
     );
 
     const result = await AdminServices.getAllAdminFromDB(allowedQueryParams);
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
-      message: "Admin created successfully",
+      message: "All admin retrieved successfully",
+      meta: result.meta,
+      data: result.data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ----------------- get admin by Id ----------------
+const getAdminById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await AdminServices.getAdminByIdFromDB(req.params?.id);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Admin retrieved successfully",
       data: result,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error?.name || "Something went wrong",
-      error: error,
+    next(error);
+  }
+};
+
+// ----------------- update admin ----------------
+const updateAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await AdminServices.updateAdminIntoDB(
+      req.params?.id,
+      req.body
+    );
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Admin updated successfully",
+      data: result,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ----------------- update admin ----------------
+const deleteAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await AdminServices.deleteAdminFromDB(req.params?.id);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Admin deleted successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ----------------- update admin ----------------
+const softDeleteAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await AdminServices.softDeleteAdminFromDB(req.params?.id);
+    res.status(200).json({
+      success: true,
+      message: "Admin deleted successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
   }
 };
 
 export const AdminController = {
   getAllAdmin,
+  getAdminById,
+  updateAdmin,
+  deleteAdmin,
+  softDeleteAdmin,
 };
