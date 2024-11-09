@@ -2,11 +2,11 @@ import { Admin, Prisma, PrismaClient, UserStatus } from "@prisma/client";
 import { ADMIN_SEARCHABLE_FIELDS } from "./admin.constant";
 import excludeFieldsForFilter from "../../utils/excludeFieldsForFilter";
 import { paginationHelper } from "../../utils/paginationHelper";
+import { IQueryParams } from "./admin.interface";
 const prisma = new PrismaClient();
 
-
 // ------------ get all admin ---------------
-const getAllAdminFromDB = async (query: Record<string, unknown>) => {
+const getAllAdminFromDB = async (query: IQueryParams) => {
   // filter query used for exact matching
   const filterQuery = excludeFieldsForFilter({ ...query });
   // pagination

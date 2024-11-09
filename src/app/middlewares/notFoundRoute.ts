@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
+import { constants } from "http2";
 
 // ------------------ not found routes --------------------------------
 const notFoundRoute = (req: Request, res: Response) => {
-  res.status(404).json({
+  res.status(constants.HTTP_STATUS_NOT_FOUND).json({
     success: false,
     message: "API NOT Found",
     error: {
