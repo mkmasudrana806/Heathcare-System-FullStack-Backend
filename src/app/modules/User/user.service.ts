@@ -1,11 +1,17 @@
 import { PrismaClient, UserRole } from "@prisma/client";
 const prisma = new PrismaClient();
 import bcrypt from "bcrypt";
+import config from "../../config";
 
 // ------------ create admin into db ---------------
 const createAdminIntoDB = async (payload: any) => {
+  console.log("service: creating, ", payload);
+
   // hash the password
-  const hashedPassword = await bcrypt.hash(payload?.password, 10);
+  const hashedPassword = await bcrypt.hash(
+    payload?.password,
+    Number(config.bcrypt_salt_rounds)
+  );
   // create user
   const userData = {
     email: payload?.admin.email,
@@ -30,7 +36,6 @@ const createAdminIntoDB = async (payload: any) => {
   return result;
 };
 
-// export all services
 export const UserServices = {
   createAdminIntoDB,
 };

@@ -13,6 +13,7 @@ import { Routes } from "./app/routes";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import notFoundRoute from "./app/middlewares/notFoundRoute";
 import cookieParser from "cookie-parser";
+import config from "./app/config";
 
 // middlewares parser
 app.use(cors());
@@ -25,6 +26,7 @@ app.use("/api/v1", Routes);
 
 // base api route
 app.get("/", (req: Request, res: Response) => {
+  console.log(config.node_env);
   res.send("heathcare server is running");
 });
 
